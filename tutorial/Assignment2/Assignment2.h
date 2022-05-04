@@ -3,10 +3,11 @@
 
 class Assignment2 : public igl::opengl::glfw::Viewer
 {
-	
+private:
+    std::string filePath;
 public:
 	
-	Assignment2();
+	Assignment2(const std::string &filePath);
 //	Assignment2(float angle,float relationWH,float near, float far);
 	void Init();
 	void Update(const Eigen::Matrix4f& Proj, const Eigen::Matrix4f& View, const Eigen::Matrix4f& Model, unsigned int  shaderIndx, unsigned int shapeIndx);

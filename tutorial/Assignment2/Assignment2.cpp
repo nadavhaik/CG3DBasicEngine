@@ -1,4 +1,5 @@
 #include "Assignment2.h"
+#include "sceneParser.h"
 #include <iostream>
 
 
@@ -13,16 +14,15 @@ static void printMat(const Eigen::Matrix4d& mat)
 	}
 }
 
-Assignment2::Assignment2()
-{
-}
+Assignment2::Assignment2(const std::string &filePath): filePath(filePath) {}
+
 
 //Assignment2::Assignment2(float angle ,float relationWH, float near, float far) : Scene(angle,relationWH,near,far)
 //{ 	
 //}
 
 void Assignment2::Init()
-{		
+{
 	unsigned int texIDs[3] = { 0 , 1, 2};
 	unsigned int slots[3] = { 0 , 1, 2 };
 	
@@ -141,7 +141,6 @@ void Assignment2::ScaleAllShapes(float amt,int viewportIndx)
 	}
 }
 
-Assignment2::~Assignment2(void)
-{
-}
+Assignment2::~Assignment2(void) {}
+
 

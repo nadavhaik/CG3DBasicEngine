@@ -38,13 +38,5 @@ if(NOT (LIBIGL_WITH_OPENGL AND LIBIGL_WITH_OPENGL_GLFW) )
   return()
 endif()
 
-
-add_subdirectory(Game)
-
-add_subdirectory(Assignment1)
-
 add_subdirectory(Assignment2)
 
-add_subdirectory(Assignment3)
-
-add_subdirectory(Project)
