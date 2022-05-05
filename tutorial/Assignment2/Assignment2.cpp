@@ -1,5 +1,4 @@
 #include "Assignment2.h"
-#include "sceneParser.h"
 #include <iostream>
 
 
@@ -14,22 +13,37 @@ static void printMat(const Eigen::Matrix4d& mat)
 	}
 }
 
-Assignment2::Assignment2(const std::string &filePath): filePath(filePath) {}
+Assignment2::Assignment2(const std::string &filePath): sceneData(*SceneParser::parse(filePath)) {}
 
 
 //Assignment2::Assignment2(float angle ,float relationWH, float near, float far) : Scene(angle,relationWH,near,far)
 //{ 	
 //}
 
+void Assignment2::addObject(float eye_x, float eye_y, float eye_z, float obj_x, float obj_y, float obj_z, float obj_radius, Eigen::Vector4f color) {
+    pickedShape = AddShape(Sphere, -1, TRIANGLES);
+    int shape = pickedShape;
+    ShapeTransformation(xTranslate, obj_x-eye_x, 0);
+    ShapeTransformation(yTranslate, obj_y-eye_y, 0);
+    ShapeTransformation(zTranslate, obj_z-eye_z, 0);
+    ShapeTransformation(scaleAll, obj_radius, 0);
+    SetShapeShader(pickedShape, 0);
+    //SetShapeStatic(pickedShape);
+}
+
+
+
 void Assignment2::Init()
 {
+
 	unsigned int texIDs[3] = { 0 , 1, 2};
 	unsigned int slots[3] = { 0 , 1, 2 };
 	
-	AddShader("shaders/pickingShader");
-	AddShader("shaders/cubemapShader");
+
 	AddShader("shaders/basicShader");
 	AddShader("shaders/pickingShader");
+    AddShader("shaders/pickingShader");
+    AddShader("shaders/cubemapShader");
 	
 	AddTexture("textures/box0.bmp",2);
 	AddTexture("textures/cubemaps/Daylight Box_", 3);
@@ -37,43 +51,51 @@ void Assignment2::Init()
 	//AddTexture("../res/textures/Cat_bump.jpg", 2);
 
 	AddMaterial(texIDs,slots, 1);
-	AddMaterial(texIDs+1, slots+1, 1);
-	AddMaterial(texIDs + 2, slots + 2, 1);
-	
-	AddShape(Cube, -2, TRIANGLES);
-	AddShape(Tethrahedron, -1, TRIANGLES);
-	
-	AddShape(Octahedron, -1, TRIANGLES);
-	AddShape(Octahedron, 2, LINE_LOOP);
-    AddShape(Tethrahedron, 1, LINE_LOOP);
+//	AddMaterial(texIDs+1, slots+1, 1);
+//	AddMaterial(texIDs + 2, slots + 2, 1);
 
-//    AddShape(Cube, -1, TRIANGLES);
-	AddShapeFromFile("data/sphere.obj", -1, TRIANGLES);
-	//AddShapeFromFile("../res/objs/Cat_v1.obj", -1, TRIANGLES);
-	AddShape(Plane, -2, TRIANGLES,3);
 
-	SetShapeShader(1, 2);
-	SetShapeShader(2, 2);
-	SetShapeShader(5, 2);
-	SetShapeShader(6, 3);
-	SetShapeMaterial(1, 0);
-	SetShapeMaterial(0, 1);
-	SetShapeMaterial(2, 2);
-	SetShapeMaterial(5, 2);
-	SetShapeMaterial(6, 0);
-	pickedShape = 0;
-	float s = 60;
-	ShapeTransformation(scaleAll, s,0);
-	pickedShape = 1;
-	ShapeTransformation(xTranslate, 10,0);
 
-	pickedShape = 5;
-	ShapeTransformation(xTranslate, -10,0);
-	pickedShape = 6;
-	ShapeTransformation(zTranslate, -1.1,0);
+    for(size_t i = 0; i<sceneData.objects.size(); i++) {
+        addObject(sceneData.eye[0], sceneData.eye[1], sceneData.eye[2],
+                  sceneData.objects[i][0], sceneData.objects[i][1], sceneData.objects[i][2], sceneData.objects[i][3],
+                  sceneData.colors[i]);
+    }
 	pickedShape = -1;
-	SetShapeStatic(0);
-	SetShapeStatic(6);
+//	AddShape(Cube, -2, TRIANGLES);
+//	AddShape(Tethrahedron, -1, TRIANGLES);
+//
+//	AddShape(Octahedron, -1, TRIANGLES);
+//	AddShape(Octahedron, 2, LINE_LOOP);
+//    AddShape(Tethrahedron, 1, LINE_LOOP);
+//
+//    AddShape(Cube, -1, TRIANGLES);
+//	AddShapeFromFile("data/sphere.obj", -1, TRIANGLES);
+//	//AddShapeFromFile("../res/objs/Cat_v1.obj", -1, TRIANGLES);
+//	AddShape(Plane, -2, TRIANGLES,3);
+//
+//	SetShapeShader(1, 2);
+//	SetShapeShader(2, 2);
+//	SetShapeShader(5, 2);
+//	SetShapeShader(6, 3);
+//	SetShapeMaterial(1, 0);
+//	SetShapeMaterial(0, 1);
+//	SetShapeMaterial(2, 2);
+//	SetShapeMaterial(5, 2);
+//	SetShapeMaterial(6, 0);
+//	pickedShape = 0;
+//	float s = 60;
+//	ShapeTransformation(scaleAll, s,0);
+//	pickedShape = 1;
+//	ShapeTransformation(xTranslate, 10,0);
+//
+//	pickedShape = 5;
+//	ShapeTransformation(xTranslate, -10,0);
+//	pickedShape = 6;
+//	ShapeTransformation(zTranslate, -1.1,0);
+//	pickedShape = -1;
+//	SetShapeStatic(0);
+//	SetShapeStatic(6);
 
 	//SetShapeViewport(6, 1);
 //	ReadPixel(); //uncomment when you are reading from the z-buffer
@@ -142,5 +164,7 @@ void Assignment2::ScaleAllShapes(float amt,int viewportIndx)
 }
 
 Assignment2::~Assignment2(void) {}
+
+
 
 

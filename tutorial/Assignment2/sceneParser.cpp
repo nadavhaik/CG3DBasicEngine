@@ -40,7 +40,7 @@ Eigen::Vector4f SceneParser::parseVec4(const std::string& line)
 }
 
 
-SceneParser::SceneParser(const std::string& fileName, SceneData* data)
+SceneParser::SceneParser(const std::string& fileName, std::shared_ptr<SceneData> data)
 {
 	std::ifstream file;
     file.open((fileName).c_str());
@@ -126,5 +126,10 @@ SceneParser::SceneParser(const std::string& fileName, SceneData* data)
 		std::cerr << "Error: " << buf; 
 		data->sizes = Eigen::Vector4i(0,0,0,0);
 	}
-	
+}
+
+std::shared_ptr<SceneData> SceneParser::parse(const std::string &fileName) {
+    std::shared_ptr<SceneData> data = std::make_shared<SceneData>();
+    SceneParser(fileName, data);
+    return data;
 }

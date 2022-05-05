@@ -46,5 +46,6 @@ private:
 	}
 	Eigen::Vector4f parseVec4(const std::string& line);
 public:
-	SceneParser(const std::string& fileName, SceneData* data);
+	SceneParser(const std::string& fileName, std::shared_ptr<SceneData> data);
+    static std::shared_ptr<SceneData> parse(const std::string& fileName);
 };
