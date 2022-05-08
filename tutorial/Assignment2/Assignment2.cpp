@@ -15,11 +15,6 @@ static void printMat(const Eigen::Matrix4d& mat)
 
 Assignment2::Assignment2(const std::string &filePath): sceneData(*SceneParser::parse(filePath)) {}
 
-
-//Assignment2::Assignment2(float angle ,float relationWH, float near, float far) : Scene(angle,relationWH,near,far)
-//{ 	
-//}
-
 void Assignment2::addObject(float eye_x, float eye_y, float eye_z, float obj_x, float obj_y, float obj_z, float obj_radius, Eigen::Vector4f color) {
     pickedShape = AddShape(Sphere, -1, TRIANGLES);
     int shape = pickedShape;
@@ -35,105 +30,42 @@ void Assignment2::addObject(float eye_x, float eye_y, float eye_z, float obj_x, 
 
 void Assignment2::Init()
 {
+    unsigned int texIDs[3] = { 0 , 1, 2};
+    unsigned int slots[3] = { 0 , 1, 2 };
 
-	unsigned int texIDs[3] = { 0 , 1, 2};
-	unsigned int slots[3] = { 0 , 1, 2 };
-	
-
-	AddShader("shaders/basicShader");
-	AddShader("shaders/pickingShader");
     AddShader("shaders/pickingShader");
-    AddShader("shaders/cubemapShader");
-	
-	AddTexture("textures/box0.bmp",2);
-	AddTexture("textures/cubemaps/Daylight Box_", 3);
-	AddTexture("textures/grass.bmp", 2);
-	//AddTexture("../res/textures/Cat_bump.jpg", 2);
+    int shader = AddShader("shaders/raytracingShader");
 
-	AddMaterial(texIDs,slots, 1);
-//	AddMaterial(texIDs+1, slots+1, 1);
-//	AddMaterial(texIDs + 2, slots + 2, 1);
+    int met = AddMaterial(texIDs,slots, 1);
+    AddMaterial(texIDs+1, slots+1, 1);
 
+    int shape = AddShape(Plane, -1, TRIANGLES,0);
+    SetShapeShader(shape,shader);
+    SetShapeMaterial(shape, met);
 
+    SetShapeStatic(shape);
 
-    for(size_t i = 0; i<sceneData.objects.size(); i++) {
-        addObject(sceneData.eye[0], sceneData.eye[1], sceneData.eye[2],
-                  sceneData.objects[i][0], sceneData.objects[i][1], sceneData.objects[i][2], sceneData.objects[i][3],
-                  sceneData.colors[i]);
-    }
-	pickedShape = -1;
-//	AddShape(Cube, -2, TRIANGLES);
-//	AddShape(Tethrahedron, -1, TRIANGLES);
-//
-//	AddShape(Octahedron, -1, TRIANGLES);
-//	AddShape(Octahedron, 2, LINE_LOOP);
-//    AddShape(Tethrahedron, 1, LINE_LOOP);
-//
-//    AddShape(Cube, -1, TRIANGLES);
-//	AddShapeFromFile("data/sphere.obj", -1, TRIANGLES);
-//	//AddShapeFromFile("../res/objs/Cat_v1.obj", -1, TRIANGLES);
-//	AddShape(Plane, -2, TRIANGLES,3);
-//
-//	SetShapeShader(1, 2);
-//	SetShapeShader(2, 2);
-//	SetShapeShader(5, 2);
-//	SetShapeShader(6, 3);
-//	SetShapeMaterial(1, 0);
-//	SetShapeMaterial(0, 1);
-//	SetShapeMaterial(2, 2);
-//	SetShapeMaterial(5, 2);
-//	SetShapeMaterial(6, 0);
-//	pickedShape = 0;
-//	float s = 60;
-//	ShapeTransformation(scaleAll, s,0);
-//	pickedShape = 1;
-//	ShapeTransformation(xTranslate, 10,0);
-//
-//	pickedShape = 5;
-//	ShapeTransformation(xTranslate, -10,0);
-//	pickedShape = 6;
-//	ShapeTransformation(zTranslate, -1.1,0);
-//	pickedShape = -1;
-//	SetShapeStatic(0);
-//	SetShapeStatic(6);
-
-	//SetShapeViewport(6, 1);
-//	ReadPixel(); //uncomment when you are reading from the z-buffer
 }
 
 void Assignment2::Update(const Eigen::Matrix4f& Proj, const Eigen::Matrix4f& View, const Eigen::Matrix4f& Model, unsigned int  shaderIndx, unsigned int shapeIndx)
 {
-	Shader *s = shaders[shaderIndx];
-	int r = ((shapeIndx+1) & 0x000000FF) >>  0;
-	int g = ((shapeIndx+1) & 0x0000FF00) >>  8;
-	int b = ((shapeIndx+1) & 0x00FF0000) >> 16;
+    Shader *s = shaders[shaderIndx];
 
+    s->Bind();
 
-		s->Bind();
-	s->SetUniformMat4f("Proj", Proj);
-	s->SetUniformMat4f("View", View);
-	s->SetUniformMat4f("Model", Model);
-	if (data_list[shapeIndx]->GetMaterial() >= 0 && !materials.empty())
-	{
-//		materials[shapes[pickedShape]->GetMaterial()]->Bind(textures);
-		BindMaterial(s, data_list[shapeIndx]->GetMaterial());
-	}
-	if (shaderIndx == 0)
-		s->SetUniform4f("lightColor", r / 255.0f, g / 255.0f, b / 255.0f, 0.0f);
-	else
-		s->SetUniform4f("lightColor", 4/100.0f, 60 / 100.0f, 99 / 100.0f, 0.5f);
-	//textures[0]->Bind(0);
+    s->SetUniformMat4f("Proj", Proj);
+    s->SetUniformMat4f("View", View);
+    s->SetUniformMat4f("Model", Model);
 
-	
-	
-
-	//s->SetUniform1i("sampler2", materials[shapes[pickedShape]->GetMaterial()]->GetSlot(1));
-	//s->SetUniform4f("lightDirection", 0.0f , 0.0f, -1.0f, 0.0f);
-//	if(shaderIndx == 0)
-//		s->SetUniform4f("lightColor",r/255.0f, g/255.0f, b/255.0f,1.0f);
-//	else 
-//		s->SetUniform4f("lightColor",0.7f,0.8f,0.1f,1.0f);
-	s->Unbind();
+    s->SetUniform4fv("eye",&sceneData.eye,1);
+    s->SetUniform4fv("ambient", &sceneData.ambient, 1);
+    s->SetUniform4fv("objects",&sceneData.objects[0], (int)sceneData.objects.size());
+    s->SetUniform4fv("objColors", &sceneData.colors[0], (int)sceneData.colors.size());
+    s->SetUniform4fv("lightsPosition", &sceneData.lights[0], (int)sceneData.lights.size());
+    s->SetUniform4fv("lightsDirection", &sceneData.directions[0], (int)sceneData.directions.size());
+    s->SetUniform4fv("lightsIntensity", &sceneData.intensities[0], (int)sceneData.intensities.size());
+    s->SetUniform4i("sizes", sceneData.sizes[0], sceneData.sizes[1], sceneData.sizes[2], sceneData.sizes[3]);
+    s->Unbind();
 }
 
 
