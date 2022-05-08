@@ -15,19 +15,6 @@ static void printMat(const Eigen::Matrix4d& mat)
 
 Assignment2::Assignment2(const std::string &filePath): sceneData(*SceneParser::parse(filePath)) {}
 
-void Assignment2::addObject(float eye_x, float eye_y, float eye_z, float obj_x, float obj_y, float obj_z, float obj_radius, Eigen::Vector4f color) {
-    pickedShape = AddShape(Sphere, -1, TRIANGLES);
-    int shape = pickedShape;
-    ShapeTransformation(xTranslate, obj_x-eye_x, 0);
-    ShapeTransformation(yTranslate, obj_y-eye_y, 0);
-    ShapeTransformation(zTranslate, obj_z-eye_z, 0);
-    ShapeTransformation(scaleAll, obj_radius, 0);
-    SetShapeShader(pickedShape, 0);
-    //SetShapeStatic(pickedShape);
-}
-
-
-
 void Assignment2::Init()
 {
     unsigned int texIDs[3] = { 0 , 1, 2};
