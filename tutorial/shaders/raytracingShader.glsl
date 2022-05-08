@@ -21,10 +21,12 @@ float intersection(inout int sourceIndx,vec3 sourcePoint,vec3 v)
     {
         if(i==sourceIndx)
             continue;
-        if(objects[i].w > 0) //sphere
+
+        vec4 object = objects[i];
+        if(object.w > 0) //sphere
         {
-            vec3 p0o =  objects[i].xyz - sourcePoint;
-            float r = objects[i].w;
+            vec3 p0o =  object.xyz - sourcePoint;
+            float r = object.w;
             float b = dot(v,p0o);
             float delta = b*b - dot(p0o,p0o) + r*r;
             float t;
@@ -43,8 +45,8 @@ float intersection(inout int sourceIndx,vec3 sourcePoint,vec3 v)
         }
         else  //plane
         {
-            vec3 n =  normalize(objects[i].xyz);
-            vec3 p0o = -objects[i].w*n/length(objects[i].xyz) - sourcePoint;
+            vec3 n =  normalize(object.xyz);
+            vec3 p0o = -object.w*n/length(object.xyz) - sourcePoint;
             float t = dot(n,p0o)/dot(n,v);
             if(t>0 && t<tmin)
             {
@@ -61,86 +63,76 @@ float intersection(inout int sourceIndx,vec3 sourcePoint,vec3 v)
 //body index in objects, point on surface of object, diffuseFactor for plane squares
 vec3 colorCalc(int sourceIndx, vec3 sourcePoint,vec3 u,float diffuseFactor)
 {
-    vec3 color = ambient.rgb*objColors[sourceIndx].rgb;
+    vec3 color = ambient.rgb * objColors[sourceIndx].rgb;
     float specularCoeff = 0.7f;
-    for(int i = 0;i<sizes.y;i++) //every light source
+    int lights_directions = sizes.y;
+    for(int i = 0;i<lights_directions;i++) //every light source
     {
         vec3 v;
-        if(lightsDirection[i].w < 0.5 ) //directional
+        vec4 light_direction = lightsDirection[i];
+        vec4 light_intensity = lightsIntensity[i];
+        vec4 light_position = lightsPosition[i];
+        if(light_direction.w < 0.5 ) //directional
         {
             int indx = sourceIndx;
-            v = normalize(lightsDirection[i].xyz);
-            //  v = normalize(vec3(0.0,0.5,-1.0));
+
+            v = normalize(light_direction.xyz);
             float t = intersection(indx,sourcePoint,-v);
 
 
             if(indx < 0 || objects[indx].w<=0) //no intersection
             {
-                // vec3 u = normalize(sourcePoint - eye.xyz);
                 if(objects[sourceIndx].w > 0) //sphere
                 {
 
                     vec3 n = -normalize( sourcePoint - objects[sourceIndx].xyz);
                     vec3 refl = normalize(reflect(v,n));
-                    if(dot(v,n)>0.0 )
-                    color+= max(specularCoeff * lightsIntensity[i].rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0));  //specular
-                    color+= max(diffuseFactor * objColors[sourceIndx].rgb * lightsIntensity[i].rgb * dot(v,n),vec3(0.0,0.0,0.0)) ;  //difuse
-                    //        color = vec3(1.0,1.0,0.0);
+                    if(dot(v,n)>0.0)
+                        color+= max(specularCoeff * light_intensity.rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0));  //specular
+                    color+= max(diffuseFactor * objColors[sourceIndx].rgb * light_intensity.rgb * dot(v,n),vec3(0.0,0.0,0.0)) ;  //difuse
                 }
                 else  //plane
                 {
                     vec3 n = normalize(objects[sourceIndx].xyz);
                     vec3 refl = normalize(reflect(v,n));
 
-                    color = min(color + max(specularCoeff * lightsIntensity[i].rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0)); //specular
-                    color = min( color + max(diffuseFactor * objColors[sourceIndx].rgb * lightsIntensity[i].rgb * dot(v,n),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0)); //difuse
-
-                    //      color = vec3(1.0,1.0,0.0);
+                    color = min(color + max(specularCoeff * light_intensity.rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0)); //specular
+                    color = min(color + max(diffuseFactor * objColors[sourceIndx].rgb * light_intensity.rgb * dot(v,n),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0)); //difuse
                 }
             }
-            //   else if(indx == 1)
-            //          color = lightsIntensity[i].rgb;
 
         }
         else  //flashlight
         {
             int indx = -1;
-            v = -normalize(lightsPosition[i].xyz - sourcePoint);
-            if(dot(v,normalize(lightsDirection[i].xyz))<lightsPosition[i].w)
-            {
+            v = -normalize(light_position.xyz - sourcePoint);
+            if(dot(v,normalize(light_direction.xyz))<light_position.w)
                 continue;
-            }
             else
             {
-                //vec3 u = normalize(sourcePoint - eye.xyz);
-                float t = intersection(indx,lightsPosition[i].xyz,v);
+                float t = intersection(indx,light_position.xyz,v);
                 if(indx == sourceIndx) //no intersection
                 {
                     if(objects[sourceIndx].w > 0) //sphere
                     {
-                        vec3 n = -normalize( sourcePoint - objects[sourceIndx].xyz);
+                        vec3 n = -normalize(sourcePoint - objects[sourceIndx].xyz);
                         vec3 refl = normalize(reflect(v,n));
                         if(dot(v,n)>0.0)
-                        color+=max(specularCoeff * lightsIntensity[i].rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0)); //specular
-                        color+= max(diffuseFactor * objColors[sourceIndx].rgb * lightsIntensity[i].rgb * dot(v,n),vec3(0.0,0.0,0.0));
-                        //          color = vec3(1.0,1.0,0.0);
+                        color+=max(specularCoeff * light_intensity.rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0)); //specular
+                        color+= max(diffuseFactor * objColors[sourceIndx].rgb * light_intensity.rgb * dot(v,n),vec3(0.0,0.0,0.0));
                     }
                     else  //plane
                     {
 
                         vec3 n = normalize(objects[sourceIndx].xyz);
                         vec3 refl = normalize(reflect(v,n)); //specular
-                        color = min(color + max(specularCoeff * lightsIntensity[i].rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0));
-                        color = min(color + max(diffuseFactor * objColors[sourceIndx].rgb * lightsIntensity[i].rgb *dot(v,n),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0));
-                        // color = vec3(1.0,1.0,0.0);
+                        color = min(color + max(specularCoeff * light_intensity.rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0));
+                        color = min(color + max(diffuseFactor * objColors[sourceIndx].rgb * light_intensity.rgb *dot(v,n),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0));
                     }
                 }
-                //else if(indx == 1)
-                //    color = lightsIntensity[i].rgb;
             }
         }
     }
-    //   color = vec3(1.0,1.0,0.0);
     return min(color,vec3(1.0,1.0,1.0));
 }
 
