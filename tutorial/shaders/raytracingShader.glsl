@@ -150,7 +150,7 @@ void main()
         vec3 n = (objects[indx].w <=0) ? normalize(objects[indx].xyz) : normalize(p - objects[indx].xyz);
         v = normalize(reflect(v,n));
         t = intersection(indx,p,v);
-        p = p + t*v;
+        p += t*v;
     }
 
     float x = p.x;//max(abs(p.x),abs(p.y))*sign(p.x+p.y);
