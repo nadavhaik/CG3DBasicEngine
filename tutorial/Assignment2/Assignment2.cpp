@@ -29,7 +29,6 @@ void Assignment2::Init()
     unsigned int texIDs[3] = { 0 , 1, 2};
     unsigned int slots[3] = { 0 , 1, 2 };
 
-    AddShader("shaders/pickingShader");
     AddShader("shaders/raytracingShader");
 
     AddTexture("textures/box0.bmp",2);
@@ -39,7 +38,7 @@ void Assignment2::Init()
     AddMaterial(texIDs+1, slots+1, 1);
 
     AddShape(Plane, -1, TRIANGLES,0);
-    SetShapeShader(0,1);
+    SetShapeShader(0,0);
     SetShapeMaterial(0, 0);
     SetShapeStatic(0);
 

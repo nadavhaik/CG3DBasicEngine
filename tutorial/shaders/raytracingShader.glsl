@@ -78,7 +78,11 @@ vec3 colorCalc(int sourceIndx, vec3 sourcePoint,vec3 u,float diffuseFactor)
                 if(objects[sourceIndx].w > 0) //sphere
                 {
                     vec3 n = -normalize( sourcePoint - objects[sourceIndx].xyz);
-                    vec3 refl = normalize(reflect(unitVectorRay,n));
+                    vec3 refl;
+                    if (sourceIndx < lastT)
+                    refl = normalize(refract(2*unitVectorRay,n,sqrt(1.5)));
+                    else
+                    refl = normalize(reflect(unitVectorRay,n));
                     if(dot(unitVectorRay,n)>0.0 )
                     color+= max(specularCoeff * lightsIntensity[i].rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0));  //specular
                     color+= max(diffuseFactor * objColors[sourceIndx].rgb * lightsIntensity[i].rgb * dot(unitVectorRay,n),vec3(0.0,0.0,0.0)) ;  //difuse
@@ -111,7 +115,13 @@ vec3 colorCalc(int sourceIndx, vec3 sourcePoint,vec3 u,float diffuseFactor)
                     if(objects[sourceIndx].w > 0) //sphere
                     {
                         vec3 n = -normalize( sourcePoint - objects[sourceIndx].xyz);
-                        vec3 refl = normalize(reflect(unitVectorRay,n));
+                        vec3 refl;
+                        if (sourceIndx >= lastT)
+                        refl = normalize(reflect(unitVectorRay,n));
+                        else
+                        refl = normalize(refract(2*unitVectorRay,n,sqrt(1.5)));
+
+
                         if(dot(unitVectorRay,n)>0.0)
                         color+=max(specularCoeff * lightsIntensity[i].rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0)); //specular
                         color+= max(diffuseFactor * objColors[sourceIndx].rgb * lightsIntensity[i].rgb * dot(unitVectorRay,n),vec3(0.0,0.0,0.0));
@@ -123,7 +133,6 @@ vec3 colorCalc(int sourceIndx, vec3 sourcePoint,vec3 u,float diffuseFactor)
                         vec3 refl = normalize(reflect(unitVectorRay,n)); //specular
                         color = min(color + max(specularCoeff * lightsIntensity[i].rgb * pow(dot(refl,u),objColors[sourceIndx].a),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0));
                         color = min(color + max(diffuseFactor * objColors[sourceIndx].rgb * lightsIntensity[i].rgb *dot(unitVectorRay,n),vec3(0.0,0.0,0.0)),vec3(1.0,1.0,1.0));
-                        // color = vec3(1.0,1.0,0.0);
                     }
                 }
             }
@@ -138,14 +147,9 @@ void main()
     vec3 unitVectorRay = normalize( position0 + eyeXY - eye.xyz);
     int minIndex = -1;
     float minDistIntersect = intersection(minIndex,position0 + eyeXY ,unitVectorRay);
-    // float po = sqrt(position0.x*position0.x + position0.y*position0.y);
-    // if (minIndex < lastT)
-    //     gl_FragColor = objColors[minIndex];
-    // else 
-    //     gl_FragColor = vec4(0,0,0,0);
-    // return;
+
     if(minIndex < 0)
-    discard;
+        discard;
     else
     {
         int counter = 5;
@@ -157,11 +161,13 @@ void main()
             n = normalize(objects[minIndex].xyz);
             else
             n = normalize(p - objects[minIndex].xyz);
-            if (minIndex < lastT) // sphere isn't translucent
+
+            if (minIndex < lastT)
+            unitVectorRay = normalize(refract(2*unitVectorRay,n,sqrt(1.5)));
+            else
             unitVectorRay = normalize(reflect(unitVectorRay,n));
-            else{ // sphere is translucent
-                unitVectorRay = normalize(reflect((-1.0)*(2/3)*unitVectorRay,n));
-            }
+
+
             minDistIntersect = intersection(minIndex,p,unitVectorRay);
             counter--;
             p = p + minDistIntersect*unitVectorRay;
@@ -170,10 +176,11 @@ void main()
         float x = p.x;
         float y = p.y;
 
+
         if(objects[minIndex].w <= 0 && (((mod(int(1.5*x),2) == mod(int(1.5*y),2)) && ((x>0 && y>0) || (x<0 && y<0))) || ((mod(int(1.5*x),2) != mod(int(1.5*y),2) && ((x<0 && y>0) || (x>0 && y<0))))))
-        gl_FragColor = vec4(colorCalc(minIndex,p,unitVectorRay,0.5),1);
+            gl_FragColor = vec4(colorCalc(minIndex,p,unitVectorRay,0.5),1);
         else
-        gl_FragColor = vec4(colorCalc(minIndex,p,unitVectorRay,1.0),1);
+            gl_FragColor = vec4(colorCalc(minIndex,p,unitVectorRay,1.0),1);
     }
 }
  
