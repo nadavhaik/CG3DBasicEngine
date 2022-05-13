@@ -4,10 +4,6 @@
 
 int main(int argc,char *argv[])
 {
-    if(argc != 2) {
-        std::cout << "Illegal arguments" << std::endl;
-        exit(0);
-    }
 	const int DISPLAY_WIDTH = 1200;
 	const int DISPLAY_HEIGHT = 800;
 	const float CAMERA_ANGLE = 0.0f;
@@ -22,7 +18,7 @@ int main(int argc,char *argv[])
     Display disp = Display(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Assignment 2");
     igl::opengl::glfw::imgui::ImGuiMenu* menu = new igl::opengl::glfw::imgui::ImGuiMenu();
     Renderer* rndr = new Renderer(CAMERA_ANGLE, (float)DISPLAY_WIDTH*WIDTH_RATIO/(float)DISPLAY_HEIGHT, NEAR, FAR);
-	Assignment2 *scn = new Assignment2(std::string(argv[1]));  //initializing scene
+	Assignment2 *scn = new Assignment2("C:\\Degree\\Year 2\\Sem 2\\Graphics\\Raw Engine\\tutorial\\files\\scene1.txt");  //initializing scene
 
 	
     Init(disp,menu); //adding callback functions

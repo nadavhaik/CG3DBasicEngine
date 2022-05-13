@@ -48,8 +48,8 @@ void glfw_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
     Assignment2* scn = (Assignment2*)rndr->GetScene();
-    scn->scnData.eye[3] -= ((float)yoffset * 0.15);
-    scn->scnData.eye[2] -= ((float)yoffset * 0.15);
+    scn->sceneData.eye[3] -= ((float)yoffset * 0.15);
+    scn->sceneData.eye[2] -= ((float)yoffset * 0.15);
     //scn->ChangeResolution(yoffset);
 
 }
