@@ -50,7 +50,6 @@ void glfw_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
     Assignment2* scn = (Assignment2*)rndr->GetScene();
     scn->sceneData.eye[3] -= ((float)yoffset * 0.15);
     scn->sceneData.eye[2] -= ((float)yoffset * 0.15);
-    //scn->ChangeResolution(yoffset);
 
 }
 // any change of cursor == mouse movement
@@ -60,8 +59,6 @@ void glfw_cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
     Assignment2* scn = (Assignment2*)rndr->GetScene();
 
     rndr->UpdatePosition((float)xpos,(float)ypos);
-    //scn->x = 1-xpos/800.0;
-    //scn->y = 1-ypos/800.0;
     scn->SetPosition((int)xpos, (int)ypos);
     if (rndr->CheckViewport(xpos,ypos, 0))
     {
@@ -95,7 +92,6 @@ void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, in
 {
     Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
     Assignment2* scn = (Assignment2*)rndr->GetScene();
-    //rndr->FreeShapes(2);
     if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
         switch (key)
