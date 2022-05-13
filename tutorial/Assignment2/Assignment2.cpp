@@ -23,9 +23,6 @@ Assignment2::Assignment2(std::string file)
     isPressed = false;
 }
 
-//Assignment2::Assignment2(float angle ,float relationWH, float near, float far) : Scene(angle,relationWH,near,far)
-//{
-//}
 
 void Assignment2::Init()
 {
@@ -200,7 +197,6 @@ float Assignment2::Intersection(Eigen::Vector3f sourcePoint)
 
 void Assignment2::RotateEye(float amt, bool upDown)
 {
-    float n = sceneData.eye.norm();
     if (upDown)
         sceneData.eye[1] += amt;
     else

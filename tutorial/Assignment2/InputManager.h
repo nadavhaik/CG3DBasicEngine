@@ -103,9 +103,6 @@ void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, in
             case GLFW_KEY_ESCAPE:
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
                 break;
-            case GLFW_KEY_F5:
-                glfwSetWindowShouldClose(window, GLFW_TRUE);
-                break;
             case GLFW_KEY_UP:
                 scn->RotateEye(0.05f, true); // calc angle up
                 break;
