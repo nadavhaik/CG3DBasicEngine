@@ -1,24 +1,29 @@
 #pragma once
 #include "igl/opengl/glfw/Viewer.h"
-#include "sceneParser.h"
-
+#include "./sceneParser.h"
+enum AxisType {X, Y, Z};
 class Assignment2 : public igl::opengl::glfw::Viewer
 {
-private:
-    SceneData sceneData;
+	int xResolution, yResolution;
+	float xOldPos, yOldPos, xRel, yRel, xPos, yPos;
+	bool isPressed;
+	bool isRightPressed;
+	int sourceIndx;
+	int tOffset = 15000;
 public:
-	
-	Assignment2(const std::string &filePath);
-//	Assignment2(float angle,float relationWH,float near, float far);
+	float time;
+	Assignment2(std::string file);
+	SceneData scnData;
 	void Init();
 	void Update(const Eigen::Matrix4f& Proj, const Eigen::Matrix4f& View, const Eigen::Matrix4f& Model, unsigned int  shaderIndx, unsigned int shapeIndx);
-	void WhenRotate();
-	void WhenTranslate();
-	void Animate() override;
+	void SetPosition(int x, int y);
 	void ScaleAllShapes(float amt, int viewportIndx);
-    void addObject(float eye_x, float eye_y, float eye_z, float obj_x, float obj_y, float obj_z, float obj_radius, Eigen::Vector4f color);
-	
+	void SetPress() { isPressed = !isPressed; }
+	void SetRightPress() { isRightPressed = !isRightPressed; }
+	float Intersection(Eigen::Vector3f sourcePoint);
+	void RotateEye(float amt, bool upDown);
 	~Assignment2(void);
-};
 
+
+};
 

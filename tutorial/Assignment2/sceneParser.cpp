@@ -65,7 +65,8 @@ SceneParser::SceneParser(const std::string& fileName, std::shared_ptr<SceneData>
             {
 			
                 case 'e':
-					data->eye = parseVec4(line);			
+					data->eye = parseVec4(line);
+                    data->eye[3] = 0.0f;
 				break;
 				case 'a':
 					data->ambient = parseVec4(line);
