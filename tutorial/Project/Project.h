@@ -1,5 +1,8 @@
 #pragma once
 #include "igl/opengl/glfw/Viewer.h"
+#if __has_include("windows.h")
+    #include "windows.h"
+#endif
 
 class Project : public igl::opengl::glfw::Viewer
 {
