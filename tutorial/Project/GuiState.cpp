@@ -620,23 +620,23 @@ ShapeEditingState::Run(Project *project, std::vector<igl::opengl::Camera *> &cam
                 OpenErrorWindow(project,"Name cannot be empty!");
                 saveSucceed = false;
             }
-            else if(editingMode == CREATE_NEW && project->GetGlobalShape(name) != nullptr) {
+            if(project->layerManager.getLayer(name) != nullptr) {
                 OpenErrorWindow(project, "Shape: " + std::string(name) + " already exists!");
                 saveSucceed = false;
             }
-            else if(layer == nullptr) {
+            if(layer == nullptr) {
                 OpenErrorWindow(project,"Layer cannot be empty!");
                 saveSucceed = false;
             }
-            else if(source == HARD_CODED && type == nullptr) {
+            if(source == HARD_CODED && type == nullptr) {
                 OpenErrorWindow(project,"Type cannot be empty!");
                 saveSucceed = false;
             }
-            else if(source == FROM_FILE && file.empty()) {
+            if(source == FROM_FILE && file.empty()) {
                 OpenErrorWindow(project,"File cannot be empty!");
                 saveSucceed = false;
             }
-            else if(mover == nullptr) {
+            if(mover == nullptr) {
                 OpenErrorWindow(project,"Curve cannot be empty!");
                 saveSucceed = false;
             }
