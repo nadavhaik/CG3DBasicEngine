@@ -31,12 +31,12 @@ IGL_INLINE void Project::Draw(int shaderIndx, const Eigen::Matrix4f &Proj, const
     if(animationStatus == PLAYING && globalTime < maxTime()) {
         ++globalTime;
 
-        Eigen::Vector3f cameraPos = GetCamera(cameraScreenAnimation)->mover->getPosition(globalTime);
-        auto delta = cameraPos - prevCamera;
-        renderer->MoveCamera(0, xTranslate, delta.x());
-        renderer->MoveCamera(0, yTranslate, delta.y());
-        renderer->MoveCamera(0, zTranslate, delta.z());
-        prevCamera = cameraPos;
+//        Eigen::Vector3f cameraPos = GetCamera(cameraScreenAnimation)->mover->getPosition(globalTime);
+//        auto delta = cameraPos - prevCamera;
+//        renderer->MoveCamera(0, xTranslate, delta.x());
+//        renderer->MoveCamera(0, yTranslate, delta.y());
+//        renderer->MoveCamera(0, zTranslate, delta.z());
+//        prevCamera = cameraPos;
     }
 
     Eigen::Matrix4f Normal;

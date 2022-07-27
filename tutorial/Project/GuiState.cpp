@@ -355,7 +355,7 @@ void MenuState::Run(Project *project, std::vector<igl::opengl::Camera *> &camera
 //                    ((Project*)viewer)->Play();
 //                }
                 if(ImGui::Button("Play")){
-                    if(project->GetCamera(project->GetCameraScreenAnimation()) == nullptr)
+                    if(false)
                         OpenErrorWindow(project, "Cannot play without a main camera");
                     else {
                         project->OpenNewWindow(std::make_shared<MediaSliderState>());
@@ -374,7 +374,7 @@ void MenuState::Run(Project *project, std::vector<igl::opengl::Camera *> &camera
                 break;
             case STOPPED:
                 if(ImGui::Button("Play")){
-                    if(project->GetCamera(project->GetCameraScreenAnimation()) == nullptr)
+                    if(false)
                         OpenErrorWindow(project, "Cannot play without a main camera");
                     else {
                         project->OpenNewWindow(std::make_shared<MediaSliderState>());
